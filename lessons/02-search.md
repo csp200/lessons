@@ -30,3 +30,12 @@
 - `fd`: search for files by name
   - e.g., `fd prog`
 - `fzf`: fuzzily search for files by name (interactivtely)
+
+## Some notes
+
+- when using pagers like `less`/`bat`, here are some useful keys:
+  - arrow keys move you up/down -- alternatively, use the 'j' and 'k' keys to
+    move up and down
+  - search for text by hitting the '/' key, typing the search text, then hitting
+    enter -- after that, hit the 'n' key to repeat the search
+  - hit the 'q' key to quit the pager
