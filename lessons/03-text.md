@@ -12,10 +12,10 @@
 
 ## Summary of commands/programs
 
-- _command_ `>` _filename_: _redirects_ the standard output of _command_ to be
-  send to the file _filename_
-- _command_ `<` _filename_: _redirects_ the standard input of _command_ to come
-  from the fiel _filename_
+- _command_ `>` _filename_: _redirects_ the standard output of _command_ to the
+  file _filename_
+- _command_ `<` _filename_: _redirects_ the standard input of _command_ from the
+  file _filename_
 - _command1_ `|` _command2_: connects the standard output of _command1_ to the
   standard input of _command2_
 - `head`: Displays the first few lines of a file (default is 10 lines), useful
