@@ -30,7 +30,7 @@
 - `uniq`: Filters out or displays only unique lines from sorted input, often
   used to remove duplicates.
 
-## Some notes
+## Notes & Caveats
 
 - when entering text that is being read by a command from standard input (e.g.,
   like `wc`), end the input text by hitting Ctrl-D on a line by itself (this
