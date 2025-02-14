@@ -21,3 +21,6 @@ Working in teams of 2, write a script that ...
 
 5. Prompts you for minimum and maximum salary values, then prints out the names
    of all City of Chicago employees whose salaries are in that range.
+
+6. Monitors your running processes, and terminates any of them (outside a list
+   of named programs) that runs longer then 20 seconds.
