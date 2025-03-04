@@ -1,4 +1,4 @@
-# Text Editing (Helix)
+# Helix & Markdown
 
 ## Agenda
 
