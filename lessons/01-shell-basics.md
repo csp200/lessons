@@ -1,4 +1,4 @@
-# CSP 200 Lect 01: Shell basics
+# Shell basics
 
 ## Agenda
 

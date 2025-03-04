@@ -1,4 +1,4 @@
-# CSP 200 Lect 02: Search
+# Search
 
 ## Agenda
 

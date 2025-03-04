@@ -1,4 +1,4 @@
-# CSP 200 Lect 03: Text Wrangling
+# Text Wrangling
 
 ## Agenda
 
