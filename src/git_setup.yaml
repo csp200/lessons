@@ -1,0 +1,78 @@
+---
+- name: Clone Git repositories from GitHub with SSH authentication
+  hosts: localhost
+  vars:
+    ssh_key_path:   "~/.ssh/id_ed25519"
+    git_user_name:  "John Doe"
+    git_user_email: "jdoe@hawk.iit.edu"
+    repositories: 
+      - repo: "https://github.com/csp200/lessons"
+        dest: "~/repos/lessons"
+        branch: "main"
+      - repo: "git@github.com:csp200/wiki"
+        dest: "~/repos/wiki"
+        branch: "main"
+
+  tasks:
+    - name: Ensure Git is installed
+      command: git --version
+      register: git_installed
+      ignore_errors: yes
+      changed_when: false
+
+    - name: Fail if Git is not installed
+      fail:
+        msg: "Git is not installed!"
+      when: git_installed.rc != 0
+
+    - name: Check if SSH key exists
+      stat:
+        path: "{{ ssh_key_path }}"
+      register: ssh_key
+
+    - name: Generate SSH key if missing
+      command: ssh-keygen -f "{{ ssh_key_path }}" -N ""
+      when: not ssh_key.stat.exists
+
+    - name: Display SSH public key if newly created
+      command: cat "{{ ssh_key_path }}.pub"
+      register: ssh_pubkey
+      changed_when: false
+      when: not ssh_key.stat.exists
+
+    - name: Show message to manually add SSH key to GitHub
+      debug:
+        msg: 
+          - "Copy the following add it to GitHub under 'Settings -> SSH and GPG keys':"
+          - "{{ ssh_pubkey.stdout }}"
+      when: not ssh_key.stat.exists
+
+    - name: Stop playbook execution if SSH key was missing
+      meta: end_play
+      when: not ssh_key.stat.exists
+
+    - name: Test GitHub SSH connection if key exists
+      command: ssh -o StrictHostKeyChecking=no -i {{ ssh_key_path }} -T git@github.com
+      register: ssh_test
+      changed_when: false
+      failed_when: "'successfully authenticated' not in ssh_test.stderr"
+      when: ssh_key.stat.exists
+
+    - name: Display GitHub SSH test result
+      debug:
+        msg: "{{ ssh_test.stderr }}"
+      when: ssh_key.stat.exists
+
+    - name: Configure Git user name
+      command: git config --global user.name {{ git_user_name }}
+
+    - name: Configure Git email
+      command: git config --global user.email {{ git_user_email }}
+
+    - name: Clone or update repositories over SSH
+      git:
+        repo: "{{ item.repo }}"
+        dest: "{{ item.dest }}"
+        version: "{{ item.branch }}"
+        update: yes
+      loop: "{{ repositories }}"
