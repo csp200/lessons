@@ -198,3 +198,10 @@ person:
   }
   ```
 - More difficult to read but faster for data exchange.
+
+## References
+
+- [JSON specification](https://www.json.org/)
+- [JSON cheatsheet](https://quickref.me/json.html)
+- [YAML specification](https://yaml.org/)
+- [YAML cheatsheet](https://quickref.me/yaml.html)
