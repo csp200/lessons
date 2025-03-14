@@ -4,16 +4,9 @@ FROM alpine:latest AS builder
 # Install build dependencies
 RUN apk add gcc musl-dev
 
-# Create the source file
+# Copy the source file into the image
 WORKDIR /src
-COPY <<EOF /src/hello.c
-#include <stdio.h>
-
-int main() {
-  printf("Hello world!\\n");
-  return 0;
-}
-EOF
+COPY ./hello.c /src/
 
 # Compile the program statically
 RUN gcc -static -o hello hello.c

@@ -5,14 +5,7 @@ RUN apk add --no-cache gcc musl-dev
 
 # Create the source file
 WORKDIR /src
-COPY <<EOF /src/hello.c
-#include <stdio.h>
-
-int main() {
-  printf("Hello world!\\n");
-  return 0;
-}
-EOF
+COPY ./hello.c /src/
 
 RUN gcc -o hello hello.c
 
