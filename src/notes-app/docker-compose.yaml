@@ -1,0 +1,32 @@
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: notes
+      POSTGRES_PASSWORD: notes123
+      POSTGRES_DB: notesdb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U notes -d notesdb"]
+      interval: 10s
+      retries: 5
+
+  web:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy  # Wait for the database to be ready
+        restart: true
+    ports:
+      - "8080:5000"
+    environment:
+      FLASK_APP: app.py
+      FLASK_RUN_HOST: 0.0.0.0
+      DATABASE_URL: postgresql://notes:notes123@db/notesdb
+    volumes:
+      - .:/app
+
+volumes:
+  pgdata:
