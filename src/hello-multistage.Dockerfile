@@ -6,16 +6,14 @@ RUN apk add gcc musl-dev
 
 # Create the source file
 WORKDIR /src
-COPY ./hello.c /src/
+COPY <<EOF /src/hello.c
+#include <stdio.h>
 
-# COPY <<EOF /src/hello.c
-# #include <stdio.h>
-
-# int main() {
-#   printf("Hello world!\\n");
-#   return 0;
-# }
-# EOF
+int main() {
+  printf("Hello world!\\n");
+  return 0;
+}
+EOF
 
 # Compile the program statically
 RUN gcc -static -o hello hello.c
