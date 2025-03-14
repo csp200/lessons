@@ -4,29 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notes</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <h1>Notes</h1>
     <form action="{{ url_for('add_note') }}" method="post">
-        <input type="text" name="author" size="25" placeholder="Author" required>
-        <input type="text" name="content" size="50" placeholder="Write a note ..." required>
+        <input type="text" name="title" size="20" placeholder="Title" required>
+        <input type="text" name="content" size="30" placeholder="Write a note ..." required>
         <button type="submit">Add Note</button>
     </form>
-    <table>
-        <tr>
-            <th>Author</th>
-            <th>Note</th>
-            <th>Created At</th>
-            <th>Action</th>
-        </tr>
+    <br>
+    <dl>
         {% for note in notes %}
-        <tr>
-            <td>{{ note.author }}</td>
-            <td>{{ note.content }}</td>
-            <td>{{ note.created_at }}</td>
-            <td><a href="{{ url_for('delete_note', id=note.id) }}">Delete</a></td>
-        </tr>
+        <dt>{{ note.title }}</dt>
+        <dd>
+            {{ note.content }}
+            <a href="{{ url_for('delete_note', id=note.id) }}">Delete</a>
+        </dd>
         {% endfor %}
-    </table>
+    </dl>
 </body>
 </html>

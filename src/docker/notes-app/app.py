@@ -10,7 +10,7 @@ db = SQLAlchemy(app)
 
 class Note(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    author = db.Column(db.String(80), nullable=False)
+    title = db.Column(db.String(80), nullable=False)
     content = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -18,9 +18,9 @@ with app.app_context():
     db.create_all()
     if Note.query.count() == 0:
         sample_notes = [
-            Note(author="Alice", content="This is a sample note from Alice."),
-            Note(author="Bob", content="Bob's first note here!"),
-            Note(author="Charlie", content="Charlie wrote this as an example.")
+            Note(title="Hello", content="Hello world!"),
+            Note(title="Grocery list", content="Eggs, Milk, Scallions"),
+            Note(title="Bye", content="Farewell, sweet earth!")
         ]
         db.session.bulk_save_objects(sample_notes)
         db.session.commit()
@@ -32,9 +32,9 @@ def index():
 
 @app.route('/add', methods=['POST'])
 def add_note():
-    author = request.form['author']
+    title = request.form['title']
     content = request.form['content']
-    new_note = Note(author=author, content=content)
+    new_note = Note(title=title, content=content)
     db.session.add(new_note)
     db.session.commit()
     return redirect(url_for('index'))
