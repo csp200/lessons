@@ -161,23 +161,24 @@ docker run -d -p 8080:80 -v $(pwd)/index.html:/usr/share/nginx/html/index.html n
 **Dockerfile:**
 
 ```dockerfile
-FROM python:3
-WORKDIR /app
-COPY app.py /app/
-CMD ["python", "app.py"]
+FROM alpine:latest
+WORKDIR /src
+COPY script.sh /src/
+RUN chmod +x /src/script.sh
+CMD ["/src/script.sh"]
 ```
 
-## Simple Python Application (`app.py`)
+## Simple Shell Script (`script.sh`)
 
-```python
-import os
-import subprocess
+```sh
+#!/bin/sh
 
-print("Hello from inside the Docker container!")
-print("Root directory contents:")
-print(subprocess.check_output(["ls", "-la", "/"]).decode())
-print("Currently running processes:")
-print(subprocess.check_output(["ps", "aux"]).decode())
+echo "Hello from inside the Docker container!"
+echo -e "\nRoot directory contents:"
+ls /
+
+echo -e "\nCurrently running processes:"
+ps aux
 ```
 
 ---
@@ -185,8 +186,8 @@ print(subprocess.check_output(["ps", "aux"]).decode())
 ## Building and Running the Custom Container
 
 ```bash
-docker build -t my-python-app .
-docker run my-python-app
+docker build -t simple .
+docker run simple
 ```
 
 ---
@@ -195,7 +196,7 @@ docker run my-python-app
 
 ### Step 1: Define Environment
 
-- Choose base image (e.g., `python:3.9`)
+- Choose base image (e.g., `alpine`)
 - Write a `Dockerfile` with dependencies
 
 ---
@@ -203,7 +204,7 @@ docker run my-python-app
 ## Step 2: Build the Container Image
 
 ```bash
-docker build -t my-app .
+docker build -t my-image .
 ```
 
 ---
@@ -211,7 +212,7 @@ docker build -t my-app .
 ## Step 3: Run and Test the Container
 
 ```bash
-docker run -d -p 5000:5000 my-app
+docker run my-image
 ```
 
 ---
@@ -219,8 +220,8 @@ docker run -d -p 5000:5000 my-app
 ## Step 4: Push to a Registry
 
 ```bash
-docker tag my-app myrepo/my-app:v1
-docker push myrepo/my-app:v1
+docker tag my-image myrepo/my-image:v1
+docker push myrepo/my-image:v1
 ```
 
 - Enables sharing and deployment
