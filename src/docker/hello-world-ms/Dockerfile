@@ -1,21 +1,19 @@
 # Stage 1: Build the executable
 FROM alpine:latest AS builder
 
-# Install build dependencies
 RUN apk add gcc musl-dev
 
-# Copy the source file into the image
 WORKDIR /src
+
 COPY ./hello.c /src/
 
-# Compile the program statically
+# Note: "static" effectively includes all libraries with the executable
 RUN gcc -static -o hello hello.c
 
 # Stage 2: Create minimal runtime image
 FROM scratch
 
-# Copy the compiled executable
+# Copy the executable from stage 1
 COPY --from=builder /src/hello /hello
 
-# Set the entrypoint
-ENTRYPOINT ["/hello"]
+CMD ["/hello"]

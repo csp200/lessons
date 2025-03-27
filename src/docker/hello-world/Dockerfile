@@ -1,13 +1,17 @@
-FROM alpine:latest AS builder
+# Set the base image
+FROM alpine:latest
 
 # Install build dependencies 
 RUN apk add --no-cache gcc musl-dev
 
-# Create the source file
+# Create and set the working directory in the image
 WORKDIR /src
+
+# Copy hello.c from the build context to the image
 COPY ./hello.c /src/
 
-RUN gcc -o hello hello.c
+# Compile the source file and create the executable
+RUN gcc hello.c -o hello
 
-# Set the entrypoint
-ENTRYPOINT ["/src/hello"]
+# Set the command to execute when the container is run
+CMD ["/src/hello"]
