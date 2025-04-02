@@ -14,4 +14,5 @@ COPY ./hello.c /src/
 RUN gcc hello.c -o hello
 
 # Set the command to execute when the container is run
+# CMD ["/src/hello"]
 CMD ["/src/hello"]
