@@ -1,7 +1,7 @@
 #! /bin/bash
  
 # variable assignment
-greeting="hello"
+greeting=""
 
 # variable interpolation (aka parameter expansion)
 echo "$greeting world"
