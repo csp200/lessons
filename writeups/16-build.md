@@ -45,16 +45,6 @@ gcc -o hello hello.c
 - what are its dependencies?
 - what is the "recipe" for building the target (based on its dependencies)?
 
-<!-- pause -->
-
-A Makefile contains:
-
-- **Targets**
-- **Prerequisites**
-- **Recipes**
-- Gotcha:
-  - Tabs, not spaces!
-
 <!--
 speaker_note: |
   hello: hello.c
