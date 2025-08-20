@@ -32,6 +32,8 @@ author: "Michael Lee"
 
   - Typically shoehorned into unrelated courses
 
+<!-- pause -->
+
 - Goals:
 
   - Reduce burden on other courses
@@ -56,7 +58,7 @@ author: "Michael Lee"
 
 ### Command Line Interfaces (CLIs)
 
-- A text-based interface for interacting with the computer — the OG UI!
+- Text-based interface for interacting with the computer — the OG UI!
 - Allows users to efficiently execute commands, automate tasks, and manage files
 - Significant in system administration, development, and troubleshooting
 
@@ -68,6 +70,14 @@ author: "Michael Lee"
 - `PowerShell`: Command-line interface for Windows systems
 - `zsh`, `fish`, etc.: Popular alternative shells
 - `tmux`, `zellij`: *screen multiplexing* tools
+
+---
+
+#### e.g., hello from the command line
+
+```bash +exec
+echo "hello from the command line!" | cowsay
+```
 
 ---
 
@@ -88,6 +98,21 @@ author: "Michael Lee"
 
 ---
 
+#### e.g., basic text manipulation
+
+```bash +exec
+head -3 ../data/romeo.txt
+```
+
+<!-- pause -->
+
+```bash +exec
+cat ../data/romeo.txt | tr -cs '[:alpha:]' '\n' \
+  | sort | uniq -c | sort -nr | head -5
+```
+
+---
+
 ### Scripting and Automation
 
 - Writing scripts to automate repetitive tasks and streamline workflows
@@ -104,6 +129,28 @@ author: "Michael Lee"
 
 ---
 
+#### e.g., a simple Text processing script
+
+```bash +exec
+FILENAME="../data/romeo.txt"
+
+WORDS=$(grep -oE '[[:alpha:]]+' $FILENAME \
+        | tr '[:upper:]' '[:lower:]')
+
+echo "Total words: $(echo "$WORDS" | wc -w)"
+
+echo "Unique words: $(echo "$WORDS" | sort -u | wc -l)"
+
+LONGEST=$(echo "$WORDS" | awk '{print length, $0}' \
+          | sort -nr | head -1 | cut -d' ' -f2)
+LEN=$(echo "$LONGEST" | awk '{print length}')
+echo 
+echo "Longest word(s) (length $LEN):"
+echo "$WORDS" | awk -v len="$LEN" 'length($0) == len'
+```
+
+---
+
 ### Development
 
 - Tools and practices that streamline software development and collaboration
@@ -114,9 +161,17 @@ author: "Michael Lee"
 #### Development Tools
 
 - `gdb`, `objdump`, `valgrind`, `strace`: debuggers / tracers
-- REPLs: interactive coding and evaluation environment
+- REPLs: interactive coding and evaluation environment (DEMO)
 - VSCode: integrated development environment
 - Jupyter Notebooks: browser based coding environment
+
+---
+
+#### e.g., binary executable object dump
+
+```bash +exec
+objdump -d /bin/ls | head -10
+```
 
 ---
 
@@ -138,6 +193,14 @@ author: "Michael Lee"
 
 ---
 
+#### e.g., Git log
+
+```bash +exec
+git log -n 3
+```
+
+---
+
 ### Containers and VMs
 
 - Running multiple operating systems or applications on a single machine.
@@ -153,6 +216,15 @@ author: "Michael Lee"
 
 ---
 
+#### e.g., Hello from a container
+
+```bash +exec
+docker run --rm --pull=always alpine \
+       echo "Hello from Linux!"
+```
+
+---
+
 ### Information Security
 
 - Protecting systems and data from unauthorized access, threats, and
@@ -163,10 +235,19 @@ author: "Michael Lee"
 
 #### Information Security Tools
 
+- `nmap`: network exploration tool / port scanner
 - SSH: Secure remote access to servers
-- shaXXXsum: secure hashing functions
+- `shaXXXsum`: secure hashing functions
 - OpenSSL: Cryptography and security protocols
 - Wireshark: Network protocol analyzer
+
+---
+
+#### e.g., local port scan
+
+```bash +exec
+nmap -F localhost
+```
 
 ---
 
@@ -184,6 +265,21 @@ author: "Michael Lee"
 - `rsync`: remote file synchronization tool
 - AWS: Cloud computing platform.
 - RESTful APIs
+
+---
+
+#### e.g., REST API
+
+```bash +exec
+curl -s https://official-joke-api.appspot.com/random_joke
+```
+
+<!-- pause -->
+
+```bash +exec
+curl -s https://official-joke-api.appspot.com/random_joke \
+   | jq -r '"\(.setup) — \(.punchline)"'
+```
 
 ---
 
@@ -220,7 +316,7 @@ author: "Michael Lee"
 #### In-Class Surveys
 
 - Most lectures will include live, in-class surveys to help assess progress
-  - 100% for participating
+  - 100% for participating (proxy for mandatory attendance!)
 - First two missed surveys are dropped, 0 for each missed survey thereafter
 - Surveys are all equally weighted
 
@@ -228,11 +324,10 @@ author: "Michael Lee"
 
 #### Quizzes
 
-- Objective questions focused mostly on concepts and high-level technical
-  knowledge
-- Help you assess your own understanding
-- You may take them an unlimited number of times before due date
-- Highest score earned is counted
+- Sets of objective questions (mostly concept-focused) on Canvas
+  - Help you assess your own understanding
+  - You may take them an unlimited number of times before due date
+  - Highest score earned is counted
 - ~8 quizzes total; weighted equally
 
 ---
@@ -240,7 +335,10 @@ author: "Michael Lee"
 #### Machine Problems (MPs)
 
 - Practical/Coding assignments
-- We provide high-level specifications & functional requirements
+- We provide high-level specifications and (sometimes) base code for your
+  implementation
+- Some may require collaboration
+- Submissions via version control (Git)
 
 ---
 
@@ -251,3 +349,9 @@ author: "Michael Lee"
   - Failed submission is not a valid excuse for late submissions
 - Contact me directly if there are extenuating circumstances, and I will
   consider on a case-by-case basis
+
+---
+
+<!-- jump_to_middle -->
+
+## Have a great semester!
