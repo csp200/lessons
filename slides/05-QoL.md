@@ -49,7 +49,7 @@ author: "Michael Lee"
 
 # Editor color support/themes
 
-- In Helix, `:config-reload` to edit configuration file
+- In Helix, `:config-open` to edit configuration file
   - Located in "~/.config/helix/config.toml"
 
   - Add the following, then save and quit:
