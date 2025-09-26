@@ -1,84 +1,53 @@
-# Processes and Job control
+---
+title: "The Process"
+author: "Michael Lee"
+---
+
+# The "Process"
 
 ## Agenda
 
-- What is a "process"? What is a "job"?
-- Process lifecycle and Process states
-- Inspect basic process information
-- Get system information
-- Manage processes
-- Manage "jobs" (shell multitasking)
+- What is a "Process"?
+- Process lifecycle
+- Process states
+- "Jobs"
+- Getting process/system information
+- Process management
 
-## **What is a Process? What is a Job?**
+---
 
-### **Process**
+# What is a Process?
 
-A **process** is an instance of a program that is being executed by the
-operating system. It is a fundamental concept in multitasking systems, allowing
-multiple programs to run concurrently.
+**Process** is *program in execution*.
 
-Each process has:
+I.e., it is an instance of a program, being run and tracked by the operating
+system (and, possibly, the shell).
 
-- A **Process ID (PID)**: A unique identifier assigned by the system.
+---
+
+## Process information
+
+The OS tracks the following for each process:
+
+- **Process ID (PID)**: A unique identifier assigned by the system.
 - **Memory space**: Includes code, data, heap, and stack segments.
 - **Execution state**: Whether it's running, waiting, stopped, etc.
 - **Associated resources**: Such as open files and network connections.
 - **Parent process**: The process that created it, identified by a **Parent
   Process ID (PPID)**.
 
-**Example:** Running a simple command in the terminal, such as:
-
-```bash
-sleep 10
-```
-
-creates a new process that sleeps for 10 seconds.
-
 ---
 
-### **Job**
+# Process Lifecycle
 
-A **job** is a collection of one or more processes that are managed as a unit in
-a shell session. In interactive shell environments, jobs allow users to manage
-multiple commands running in the foreground or background.
+A process goes through different stages during its execution.
 
-- A job can contain **one process** (e.g., `sleep 10`) or **multiple processes**
-  (e.g., `ls | grep txt`).
-- The shell assigns each job a **job ID** (different from the PID).
-- Jobs can be:
-  - **Foreground jobs**: Processes that interact with the terminal and block
-    user input.
-  - **Background jobs**: Processes that run in the background, allowing the user
-    to continue working.
-
-**Example:** Running a command in the background:
-
-```bash
-sleep 30 &
-```
-
-- The `&` at the end starts the process in the background.
-- The shell outputs something like:
-  ```
-  [1] 12345
-  ```
-  Here, `[1]` is the job ID, and `12345` is the process ID (PID).
-
-To view background jobs:
-
-```bash
-jobs
-```
-
----
-
-## **Process Lifecycle and Process States**
-
-A process goes through different stages during its execution. The process
-lifecycle consists of three main phases: **creation, execution, and
+The process lifecycle consists of three main phases: **creation, execution, and
 termination**.
 
-### **1. Process Creation**
+---
+
+## 1. Process Creation
 
 A new process is created in response to:
 
@@ -86,24 +55,20 @@ A new process is created in response to:
 - A system request (e.g., a web server spawning worker processes).
 - Another process using **process creation system calls**.
 
-In Unix-based systems, process creation typically follows:
-
-1. **`fork()`** – Creates a duplicate child process.
-2. **`exec()`** – Replaces the child’s memory space with a new program.
-3. **`wait()`** – Allows the parent process to wait for the child to complete.
-
-In shell scripting, most commands run as a separate process.
+From the perspective of a shell, all external commands (i.e., not built-ins),
+run as a separate process.
 
 ---
 
-### **2. Process Execution**
+## 2. Process Execution
 
-Once created, the process begins execution. The CPU scheduler determines which
-process gets CPU time based on factors like priority and scheduling policies.
+Once created, the process begins execution. The *operating system scheduler*
+determines which process gets CPU time based on factors like priority and
+scheduling policies.
 
 ---
 
-### **3. Process Termination**
+## 3. Process Termination
 
 A process ends in several ways:
 
@@ -114,30 +79,75 @@ A process ends in several ways:
 
 ---
 
-## **Process States**
+## Process States
 
-A process exists in one of several states:
+After a process is created, a process is in one of the following states:
 
-| **State**    | **Description**                                                                                                     |
-| ------------ | ------------------------------------------------------------------------------------------------------------------- |
-| **Running**  | The process is actively executing instructions on the CPU.                                                          |
-| **Sleeping** | The process is waiting for an event (e.g., I/O completion, user input).                                             |
-| **Stopped**  | The process is "paused" (e.g., using `Ctrl+Z`).                                                                     |
-| **Zombie**   | The process has finished execution but remains in the process table because the parent hasn’t read its exit status. |
+| **State**    | **Description**                              |
+| ------------ | -------------------------------------------- |
+| **Running**  | Actively executing instructions on the CPU   |
+| **Sleeping** | Waiting for an event (e.g., user input)      |
+| **Stopped**  | "Paused" (e.g., using `Ctrl+Z`)              |
+| **Zombie**   | Terminated but its exit status is held by OS |
 
-## Demo
+After a process turns into a **Zombie**, and it is "reaped" (by either the OS or
+its parent process), the process effectively disappears from the system.
 
-[![Basic process management](https://asciinema.org/a/706290.svg)](https://asciinema.org/a/706290)
+---
 
-[![Job management](https://asciinema.org/a/706293.svg)](https://asciinema.org/a/706293)
+## Running vs. "Ready"/"Runnable"
 
-## Summary of commands/programs
+The number of running processes is physically limited by the number of CPU cores
+
+- Processes which are in the running state, but not actually executing are
+  termed "ready"/"runnable"
+
+  - OS scheduler maintains a queue of runnable processes to switch on/off CPUs
+
+---
+
+# "Jobs"
+
+When you start a process from the shell (e.g., by typing a command), the shell
+tracks that process (and, potentially, others related to it) as a "job".
+
+- A job can contain **one process** (e.g., `sleep 10`) or **multiple processes**
+  (e.g., `ls | grep txt`).
+- The shell assigns each job a **job ID** (different from the PID).
+- Jobs can be:
+  - **Foreground jobs**: Processes that interact with the terminal and block
+    user input.
+  - **Background jobs**: Processes that run in the background, allowing the user
+    to continue working.
+
+---
+
+## Job management
+
+We previously discussed shell job management features:
+
+- `Ctrl-Z` to stop a job
+- `jobs` to list jobs managed by the current shell
+- `fg %JID` to run job with id JID in the foreground
+- `bg %JID` to run job with id JID in the background
+- `COMMAND &` to start COMMAND as a background job
+
+---
+
+# Getting process information
+
+There are many Unix commands to get process-related information:
 
 - `ps`: Get process status information
+- `pstree`: Show processes in a hierarchical tree.
 - `top`/`htop`: Monitor process/system resource usage
 - `uptime`: Get system uptime and load
 - `free`: View system memory usage
-- `&`: Run a program as a "background" process
-- `fg`/`bg`: Run a job in the foreground / background
-- `Ctrl-Z`: Stop the foreground job
-- `jobs`: List current jobs managed by this shell
+
+---
+
+## An essential statistic: "load average"
+
+- Def. average number of runnable processes over some period of time
+- Only meaningful in contrast to the number of CPU cores
+  - E.g., # customers waiting in a store vs. # cashiers
