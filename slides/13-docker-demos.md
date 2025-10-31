@@ -24,17 +24,23 @@ author: "Michael Lee <lee@iit.edu>"
 ```bash
 docker run hello-world
 
-# `--rm` removes the container when it stops
-docker run --rm hello-world
-
 # list running containers (-a also shows stopped ones)
 docker ps [-a]
+
+# `--rm` removes the container when it stops
+docker run --rm hello-world
 
 # remove stopped containers
 docker container prune 
 
 # list images
 docker image ls
+
+# delete an image
+docker image rm hello-world
+
+# will be forced to pull it again
+docker run --rm hello-world
 ```
 
 ---
@@ -46,17 +52,21 @@ docker image ls
 Commands to explore (`IMAGE` = `ubuntu` | `alpine`):
 
 ```bash
-# show layers and other info about an image
-docker history IMAGE
+# run a container interactively (with the default command) 
+docker run -it IMAGE 
 
 # run a command in the container
 docker run IMAGE echo hello
 
-# run a container interactively (with the default command) 
-docker run -it IMAGE 
+# get the size of the "usr" directory (containing included packages)
+docker run IMAGE du -hs /usr
+
+# show layers and other info about an image
+docker history IMAGE
 
 # run a command in a named container in the background (-d = "detach")
 docker run --name CNAME -d IMAGE sleep infinity
+docker ps # should list the running container
 
 # execute a command in a running container
 docker exec CNAME ps ax
@@ -121,6 +131,38 @@ If we want to make this setup permanent, we can build a custom image.
 
 ---
 
+# Detaching and Reattaching
+
+```bash
+docker run -it --rm --name mylinux alpine
+
+# use the terminal and make changes
+
+<ctrl-p> <ctrl-q> # detaches from the container
+
+docker attach myalpine
+
+# alternatively
+
+docker run -dit --rm --name myalpine alpine
+
+docker attach myalpine # exiting this will stop the container!
+
+docker exec -it myalpine sh # this creates a fresh shell
+
+# restarting a stopped container
+
+docker run -it --name myalpine alpine # make some persistent changes and quit
+
+docker ps -a # should show the container exited
+
+docker start -ai # restart interactive session with container
+
+docker cp myalpine:/path/to/file filename # copy a file out from container
+```
+
+---
+
 # Building a Docker image
 
 ## Dockerfiles
@@ -166,6 +208,10 @@ To build (run in `../src/docker/hello-world`):
 
 ```bash
 docker build -t hello-world .
+
+docker run hello-world # build a container from the image
+
+docker run -it hello-world sh # start a shell in the container
 ```
 
 ---
@@ -202,6 +248,12 @@ To build (run in `../src/docker/hello-world-ms`):
 
 ```bash
 docker build -t hello-world-ms .
+
+docker run hello-world-ms # build a container from the image
+
+docker run -it hello-world-ms sh # fails! there is no shell!
+
+docker image ls # look at the difference in size!
 ```
 
 ---
@@ -231,7 +283,11 @@ As an alternative to a volume, it is also possible to *mount* a directory from
 the host directly into the container
 
 ```bash
+# on Mac
 docker run --rm -it -v $(pwd):/data alpine
+
+# on Windows (PowerShell)
+docker run --rm -it -v ${PWD}:/data alpine
 ```
 
 - convenient for local development
@@ -263,7 +319,7 @@ docker stop my-nginx
 
 # place website in "./my-site" and use a bind mount
 docker run --rm -d -p 8080:80 \
-  -v $(pwd)/my-site:/usr/share/nginx/html:ro \
+  -v $(pwd)/my-site:/usr/share/nginx/html:ro \ # use ${PWD} for windows!
   --name my-nginx nginx
 ```
 
