@@ -1,0 +1,20 @@
+services:
+  csp200-1:
+    container_name: csp200-1
+    image: csp200
+    build: .
+    networks:
+      - csp200net
+    tty: true
+
+  csp200-2:
+    container_name: csp200-2
+    image: csp200
+    build: .
+    networks:
+      - csp200net
+    tty: true
+
+networks:
+  csp200net:
+    driver: bridge
