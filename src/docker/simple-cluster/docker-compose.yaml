@@ -1,0 +1,33 @@
+services:
+  node1:
+    image: alpine
+    container_name: node1
+    command: sh -c "echo 'Hello from node1' > /shared/greeting.txt && sleep infinity"
+    volumes:
+      - shared-data:/shared
+    networks:
+      - my-net
+
+  node2:
+    image: alpine
+    container_name: node2
+    command: sh -c "sleep infinity"
+    volumes:
+      - shared-data:/shared
+    networks:
+      - my-net
+
+  node3:
+    image: alpine
+    container_name: node3
+    command: sh -c "sleep infinity"
+    volumes:
+      - shared-data:/shared
+    networks:
+      - my-net
+
+volumes:
+  shared-data:
+
+networks:
+  my-net:
