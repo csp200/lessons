@@ -81,7 +81,13 @@
      chgrp users ~
      ```
 
-2. Set up SSH (in `csp200-1`):
+2. Who am I?
+
+   ```bash
+   curl ifconfig.me
+   ```
+
+3. Set up SSH (in `csp200-1`):
 
    ```bash
    service ssh start
@@ -93,13 +99,17 @@
    ssh USERNAME@csp200-1
    ```
 
-3. Who am I?
+4. Simple client/server communication
 
    ```bash
-   curl ifconfig.me
+   # on the server
+   nc -lk -p 9999
+
+   # on the client
+   nc SERVER 9999
    ```
 
-4. Scanning network ports. Packages needed: `nmap`, `iproute2`, `lsof`.
+5. Scanning network ports. Packages needed: `nmap`, `iproute2`, `lsof`.
 
    - Scan for open network ports in a container (run in `csp200-1`):
 
@@ -126,7 +136,7 @@
      curl csp200-1:8888
      ```
 
-5. Try to crack a password. Packages needed: `hydra`.
+6. Try to crack a password. Packages needed: `hydra`.
 
    - Be sure to set a password for the user on the machine to be hacked
      (csp200-1):
@@ -148,7 +158,7 @@
      hydra -l USERNAME -P rockyou.txt ssh://csp200-1 -f
      ```
 
-6. Circumvent clear-text passwords using key-pair authentication.
+7. Circumvent clear-text passwords using key-pair authentication.
 
    - Generate a key pair on the client machine (csp200-2) and copy it onto the
      server:
