@@ -10,13 +10,13 @@
     container as that user by default. In order to run privileged commands as
     that user, you'll need to use `sudo` (which we cover in the demos).
 
+  - Start two containers and attach them to the same network with the command
+    `docker compose up` in the "lessons/src/docker/csp200" directory.
+
 ## Hands-On Demos
 
 1. Understand local file permissions, access protection, and privilege
    escalation with `sudo`. Packages needed: `sudo`.
-
-   - Create a regular user account with `adduser` in a running container and
-     switch to that user with `su - USERNAME`.
 
    - View, alter, and understand the effects of file permissions:
 
@@ -60,7 +60,7 @@
      ls -l
      ```
 
-   - Create another regular user account with `adduser`.
+   - Create another regular user account with `adduser USERNAME`.
 
    - Add both users to group "users":
 
@@ -76,69 +76,14 @@
      directories and accessing their content from other user accounts:
 
      ```bash
-     chmod 750 ~
+     sudo su - USERNAME
+     ls -l /home
      chgrp users ~
      ```
 
-2. Create a network and manually attach two containers to the network. Packages
-   needed: `iputils-ping`.
+2. Set up SSH (in `csp200-1`):
 
    ```bash
-   docker network create csp200net
-
-   # run the following in two separate terminals
-   docker run --rm --name csp200-1 --network csp200net -it csp200
-   docker run --rm --name csp200-2 --network csp200net -it csp200
-
-   # confirm that they are able to reach each other
-   ping csp200-2 # run on csp200-1
-   ping csp200-1 # run on csp200-2
-
-   # exit and stop containers
-   docker stop csp200-1
-   docker stop csp200-2
-   docker network rm csp200net
-   ```
-
-3. Create a "docker-compose.yaml" to simplify this setup:
-
-   ```yaml
-   services:
-     csp200-1:
-       container_name: csp200-1
-       image: csp200
-       networks:
-         - csp200net
-       tty: true
-
-     csp200-2:
-       container_name: csp200-2
-       image: csp200
-       networks:
-         - csp200net
-       tty: true
-
-   networks:
-     csp200net:
-       driver: bridge
-   ```
-
-   To start the containers, do `docker-compose up -d`
-
-   To get terminal access to the containers, do:
-
-   ```bash
-   # in separate terminals
-   docker exec -it csp200-1 bash
-   docker exec -it csp200-2 bash
-   ```
-
-4. Create a user and set up SSH (in `csp200-1`):
-
-   ```bash
-   # follow the interactive prompts after the following command
-   adduser USERNAME
-
    service ssh start
    ```
 
@@ -148,7 +93,13 @@
    ssh USERNAME@csp200-1
    ```
 
-5. Scanning network ports. Packages needed: `nmap`, `iproute2`, `lsof`.
+3. Who am I?
+
+   ```bash
+   curl ifconfig.me
+   ```
+
+4. Scanning network ports. Packages needed: `nmap`, `iproute2`, `lsof`.
 
    - Scan for open network ports in a container (run in `csp200-1`):
 
@@ -169,7 +120,13 @@
      nmap csp200-1
      ```
 
-6. Try to crack a password. Packages needed: `hydra`.
+   - Connect to the web server from the other:
+
+     ```bash
+     curl csp200-1:8888
+     ```
+
+5. Try to crack a password. Packages needed: `hydra`.
 
    - Be sure to set a password for the user on the machine to be hacked
      (csp200-1):
@@ -191,21 +148,7 @@
      hydra -l USERNAME -P rockyou.txt ssh://csp200-1 -f
      ```
 
-7. Log activities and inspect logfiles. Packaged needed: `rsyslog`.
-
-   - Start logging:
-
-     ```bash
-     service rsyslog start
-     ```
-
-   - Run hydra on the "hacking" system, then view the authentication log:
-
-     ```bash
-     tail -f /var/log/auth.log
-     ```
-
-8. Circumvent clear-text passwords using key-pair authentication.
+6. Circumvent clear-text passwords using key-pair authentication.
 
    - Generate a key pair on the client machine (csp200-2) and copy it onto the
      server:
