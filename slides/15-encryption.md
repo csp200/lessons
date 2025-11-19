@@ -1,142 +1,255 @@
-Encryption
+# Practical Cryptography Demo: Hashing, GPG, and OpenSSL
 
-# Pushing an image to docker
+## 1. Hashing Basics
 
-docker build -t <DOCKER_USERNAME>/getting-started-todo-app .
+### Goal
 
-OR
+Show how one-way functions manifest as hashing tools.
 
-docker tag
+### Commands
 
-docker push <DOCKER_USERNAME>/getting-started-todo-app
+- Hash a file:
+  ```sh
+  sha256sum myfile.txt
+  ```
+- Hash a string:
+  ```sh
+  echo -n "hello world" | sha256sum
+  ```
 
-# Sending files back/forth
+### Key Ideas
 
-receiver
+- Hashes are deterministic, one-way, and collision-resistant.
+- Small input changes create large unpredictable hash changes (avalanche
+  effect).
 
-    nc -l -p 9000 > bar
+---
 
-sender:
+## 2. Verifying Data Integrity
 
-    nc -q 0 receiver 9000 < foo
+### Commands
 
-or set up a shared volume!
+- Save hash:
+  ```sh
+  sha256sum large-file.iso > large-file.iso.sha256
+  ```
+- Verify:
+  ```sh
+  sha256sum -c large-file.iso.sha256
+  ```
 
-# Symmetric key encryption
+### Key Idea
 
-gpg --symmetric filename
+Integrity ≠ authentication. You know the file wasn’t corrupted, but not *who*
+created it.
 
-gpg --decrypt filename.gpg
+---
 
-# Public / Assymetric key encryption
+## 3. GPG: Generating Keys
 
-1. Motivation: Why Cryptography Matters
+### Commands
 
-   - “How can I send a secret to someone I’ve never met before?”
-   - Real-world problems:
-   - Sending sensitive info over insecure channels (e.g., Wi-Fi, internet)
-     - Authenticating identity in a digital world
+- Create a key pair:
+  ```sh
+  gpg --full-generate-key
+  ```
+- List keys:
+  ```sh
+  gpg --list-keys
+  gpg --list-secret-keys
+  ```
 
-2. Basics of Public Key Encryption
+### Key Idea
 
-- Conceptual Foundations
+Public key = lock; private key = key. You can share the public key widely.
 
-  - Every user has:
-    - A public key (shared)
-    - A private key (kept secret)
-    - Encrypt with the public key → only decryptable with private key
-      - Theoretical basis: Trapdoor one-way functions
+---
 
-  - Analogy: Lockbox and key
-    - RSA simplified: multiplying primes is easy, factoring is hard
+## 4. Encrypting and Decrypting with GPG
 
-4. Applications and Use Cases (30 min)
+### Commands
 
-5. Role of Certificate Authorities (CAs)
+- Encrypt a file for someone:
+  ```sh
+  gpg --encrypt --recipient "Alice Example" secrets.txt
+  ```
+- Decrypt:
+  ```sh
+  gpg --decrypt secrets.txt.gpg
+  ```
 
-   ssh-keygen ssh-copy-id user@server
+### Key Idea
 
-6. Pitfalls and Attacks (10–15 min)
+Only the intended recipient can decrypt using their private key.
 
-   - Man-in-the-middle attack
-   - Fake certificates / bad CAs
-   - Weak key sizes (e.g., deprecated 1024-bit RSA)
-   - Social engineering (e.g., tricking users into trusting malicious keys)
+---
 
-# Encrypting a Message for a Peer
+## 5. Signing Files with GPG
 
-Goal: Learn how to encrypt data so only a specific user can read it.
+### Commands
 
-1. Generate a key pair:
+- Sign:
+  ```sh
+  gpg --sign document.pdf
+  ```
+- Create a detached signature:
+  ```sh
+  gpg --detach-sign --armor document.pdf
+  ```
+- Verify:
+  ```sh
+  gpg --verify document.pdf.asc document.pdf
+  ```
 
-   gpg --full-generate-key
+### Key Idea
 
-2. Export your public key and share it
+Signing authenticates *you* and assures integrity.
 
-   gpg --export -a "Your Name" > yourname_pubkey.asc
+---
 
-3. Import a peer’s public key:
+## 6. Sharing and Importing Public Keys
 
-   gpg --import friend_pubkey.asc
+### Commands
 
-4. Encrypt a message:
+- Export your key:
 
-   echo "Secret launch codes: 12345" > secret.txt
+```sh
+# use key id found in `gpg --list-keys` output
+gpg --armor --export ABCD1234EFG567890 > my-public-key.asc
 
-   gpg --encrypt --recipient "Friend Name" secret.txt
+# can also use user id, if unique
+gpg --armor --export "Bob" > bob.asc
+```
 
-5. Friend decrypts it:
+- Attach this key to an email signature or place it on your website!
 
-   gpg --decrypt secret.txt.gpg
+- Import someone else’s key:
 
-# Signing a Message
+```sh
+curl -O https://moss.cs.iit.edu/michael.pub
 
-Goal: Show how to prove authorship of a message.
+gpg --import michael.pub
 
-1. Create a text file
+gpg --fingerprint
 
-   echo "I, Alice, approve this transaction." > statement.txt
+curl -O https://moss.cs.iit.edu/hello.txt.gpg
 
-2. Sign it
+gpg --verify hello.txt.gpg
+```
 
-   gpg --clearsign statement.txt
+- Authenticity requires trust — fingerprints must be verified out-of-band.
 
-3. Verify the signature
+- Try `gpg --encrypt --recipient "Michael Lee" foo.txt` --- what warning do you
+  get?
 
-gpg --verify statement.txt.asc
+- Two separate types of "trust":
+  1. Do I trust that this key belongs to Michael?
+  2. Do I trust Michael to certify other people's keys?
 
-# Verifying the Authenticity of a File
+- To affirm (1), verify key fingerprint out-of-band (e.g., phone, meeting,
+  official website), then:
 
-Goal: Validate that a file was signed by a trusted person.
+```
+gpg --edit-key "Michael Lee"
 
-Scenario: You’ve downloaded a script and want to verify its signature.
+# at the prompt
+gpg> sign
+gpg> save
+```
 
-1. Download both script.sh and script.sh.asc.
+- To affirm (2), do:
 
-2. Import the author’s public key.
+```
+gpg> trust
 
-3. Verify the signature:
+# at the menu: 
+1 = I don't know or won't say
+2 = I do NOT trust
+3 = I trust marginally
+4 = I trust fully
+5 = I trust ultimately
 
-   gpg --verify script.sh.asc script.sh
+Pick a trust level (e.g., 4)
+```
 
-# Creating a Detached Signature
+---
 
-Goal: Allow verification of a file without modifying it.
+## 7. Signing Git Commits with GPG
 
-1. Create a file:
+### Steps
 
-   echo "Version 1.2.3 release notes" > release.txt
+1. Configure Git:
+   ```sh
+   git config --global user.signingkey YOURKEYID
+   git config --global commit.gpgsign true
+   ```
+2. Make a commit:
+   ```sh
+   git commit -S -m "Signed commit"
+   ```
+3. Verify:
+   ```sh
+   git log --show-signature
+   ```
 
-2. Sign with a detached signature:
+### Key Idea
 
-   gpg --output release.txt.sig --detach-sign release.txt
+Signed commits help ensure repository integrity and provenance.
 
-3. Distribute both release.txt and release.txt.sig.
+---
 
-# Encrypting and Signing a File (Hybrid)
+## 8. OpenSSL: Creating Key Pairs
 
-Goal: Ensure confidentiality and authenticity.
+### Commands
 
-1. Encrypt and sign a file in one step:
+- Generate an RSA key:
+  ```sh
+  openssl genpkey -algorithm RSA -out private.pem -pkeyopt rsa_keygen_bits:2048
+  ```
+- Get the public key:
+  ```sh
+  openssl pkey -in private.pem -pubout -out public.pem
+  ```
 
-   gpg --encrypt --sign --recipient "Friend Name" secret.txt
+### Key Idea
+
+Gives lower-level insight into key formats and PEM encoding.
+
+---
+
+## 9. Encrypting/Decrypting with OpenSSL (Hybrid Encryption)
+
+### Commands
+
+- Encrypt:
+  ```sh
+  openssl pkeyutl -encrypt -inkey public.pem -pubin -in plaintext.txt -out ciphertext.bin
+  ```
+- Decrypt:
+  ```sh
+  openssl pkeyutl -decrypt -inkey private.pem -in ciphertext.bin -out decrypted.txt
+  ```
+
+### Key Idea
+
+Asymmetric cryptography typically protects small messages or symmetric keys.
+
+---
+
+## 10. Signing and Verifying with OpenSSL
+
+### Commands
+
+- Sign:
+  ```sh
+  openssl dgst -sha256 -sign private.pem -out file.sig file.txt
+  ```
+- Verify:
+  ```sh
+  openssl dgst -sha256 -verify public.pem -signature file.sig file.txt
+  ```
+
+### Key Idea
+
+Same principles as GPG, but lower-level and closer to raw cryptographic
+primitives.
