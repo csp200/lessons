@@ -3,17 +3,12 @@ title: "Final Lecture: Recap and Path Forward"
 author: "Michael Lee <lee@iit.edu>"
 ---
 
-# Course Topics Recap
+# Agenda
 
-- Remote workflows
-- Text Wrangling
-- Data serialization
-- Command Line & Shell Scripting
-- System Internals
-- Git and Version Control
-- Configuration and Automation Tools
-- Containers and Virtualization
-- Security and Safe Computing
+- Course Topics Recap
+- How to "practice"
+- Suggestions topics to explore
+- Closing thoughts and advice
 
 ---
 
@@ -63,101 +58,109 @@ author: "Michael Lee <lee@iit.edu>"
 
 - Git basics: init, add, commit, log
 - Viewing differences and history
-- Branches, merging, conflict resolution
+- Branches, merging, rebasing, conflict resolution
 - Collaborative Git: GitHub, PRs
-
----
-
-# Configuration & Automation
-
-- Ansible basics
-- System provisioning
-- Infrastructure as code
-- Build automation with `make`
 
 ---
 
 # Containers & Virtualization
 
 - Docker images and containers
-- Writing Dockerfiles
-- Networking and volumes
+- Volumes and Bind mounting for persistence
+- Customizing Dockerfiles
+- Bridge networks and port mapping
 - Creating/Connecting multiple containers with `compose`
-- Use cases: sandboxing, reproducibility
+- Use cases: sandboxing, reproducibility, experimentation
 
 ---
 
-# Security and Best Practices
+# Networking
+
+- Networking basics
+- Port-scanning (`nmap`)
+- Plain-text client/server interaction (netcat/`nc`)
+- Brute-force passwork cracking (takeaway: don't use plain-text passwords!)
+
+---
+
+# Security and Encryption
 
 - File permissions
-- Public key encryption (e.g., `GPG`)
-- Working securely on "open" networks
-  - Pubkey encryption with `SSH` vs. clear-text passwords
 - Safe defaults and threat awareness
+- Public key encryption (e.g., `SSH`, `GPG`)
+  - Private communication
+  - Signing and authentication (e.g., email, Git)
+  - Hybrid encryption (symmetric+asymmetric) for efficiency
 
 ---
 
-# What did we leave out?
+# Practice and Skill Maintenance
 
-- Web/Cloud APIs (e.g., RESTful APIs)
-- AI Tools and Assistants
+- Create a personal "lab notebook" repository
+  - Your own living portfolio
+    - Add configuration files, notes, experiments, scripts, etc.
+  - Use branches for experiments and new ideas
+- Build a Docker image with your favorite tools
+  - Personalize them (e.g., via dotfiles)
+  - Use it to as a playground and for personal projects!
+- Teach what you know -- strongest possible reinforcement
+  - Pair with a friend or tutor other students
 
 ---
 
-# How to Review and Practice
+# Projects to Work on
 
-- Rerun and extend past assignments
-- Build your own CLI or automation tools
-- Start a GitHub project with friends
-- Teach someone else what you learned
+- Mini data pipelines
+  - `curl` / `jq` / `csvkit`
+- A small web application (maybe in `Python`/`Flask`)
+  - Easy to host and run in a Docker container
+- An open source application
+  - Look for an interesting one on GitHub, clone it, look through issues
+  - Contribute with PRs
 
 ---
 
 # Suggested Topics to Explore
 
 - Nix/NixOS
-- Kubernetes and DevOps Pipelines
+- Kubernetes and more DevOps
+- Git workflows and GitHub actions
+- Python or Rust Scripting
 - Advanced System Internals (a la CS 351/450)
 - Advanced Networking (CS 455)
 - Security and Ethical Hacking (CS 458)
 
 ---
 
-# Suggested Topics (continued)
-
-- Advanced Git Workflows
-- Python or Rust Scripting
-- AI-assisted Development
-- **Contributing to Open Source**
-  - Real-world collaboration
-  - Learn by reading and doing
-  - Public portfolio and impact
-
----
-
 # The Next Decade of Tools
 
-- Declarative and reproducible systems
-- AI-augmented workflows
-- DevSecOps and automation by default
-- Cloud-native development
-- Focus on composability and UX
+- Zero-Trust Architectures
+  - Authentication everywhere, encrypted everything
+- Ephemeral Compute Environments
+  - Spin-up, do work, tear down
+  - Clouds and dev platforms trend toward disposable compute
+- Human-Centered Automation
+  - AI copilots everywhere
+  - Our roles shift to verification, architecture, and judgment
+- Return of "Small Sharp Tools"
+  - Evan as AI expands, minimalistic, composable tools are becoming more
+    important
+  - Knowing how to glue tools together remains an evergreen skill
 
 ---
 
 # Final Advice
 
-- **Be Curious**: Always ask how and why
-- **Be Consistent**: Build daily habits with tools
-- **Be Skeptical**: Understand what's under the hood
-- **Stay Connected**: Communities, projects, blogs
-- **Be a Toolmaker**: Build the tools you need
+- *Be Curious*: Always ask how and why
+- *Be Consistent*: Build daily habits with tools
+- *Be Skeptical*: Understand what's under the hood
+- *Be a Toolmaker*: Build the tools you need
 
 ---
 
 # Closing Thoughts
 
-- Thank you!
-- You now have the *language* to keep learning
+- *Thank you!*
+- You now have the language to keep learning
 - Keep exploring, building, breaking, fixing
 - Practical computing tools are *force multipliers*!
